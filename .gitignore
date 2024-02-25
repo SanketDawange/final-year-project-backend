@@ -6,8 +6,6 @@ __pycache__/
 *$py.class
 
 # Django settings file
-settings.py
-
 # Database
 db.sqlite3
 
