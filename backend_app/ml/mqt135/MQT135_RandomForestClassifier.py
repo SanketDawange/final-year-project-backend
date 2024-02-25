@@ -59,8 +59,9 @@ y_pred
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
 
+print("Updating ML model...")
 joblib.dump(model, 'backend_app\ml\mqt135\gas_concentration.joblib')
-
+print("ML model updated successfully")
 
 # concentration_input = float(input("Enter the concentration value: "))
 # concentration_input = [[concentration_input]]

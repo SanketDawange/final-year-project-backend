@@ -1,28 +1,5 @@
-# .gitignore for Django projects
-
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Django settings file
-# Database
 db.sqlite3
-
-# Static files
-/static/
-
-# Media files
-/media/
-
-# Virtual environment
-venv/
-
-# Log files
-*.log
-
-# Ignore local development settings
-local_settings.py
-
-# Ignore macOS system files
-.DS_Store

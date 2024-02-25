@@ -67,7 +67,9 @@ print("Precision:", precision)
 print("Recall:", recall)
 print("F1 Score:", f1)
 
+print("Updating ML model...")
 joblib.dump(model, 'backend_app\ml\dht11\comfort_level_model.joblib')
+print("ML model updated successfully")
 
 # INPUT
 new_data = [[11.5, 50]]
