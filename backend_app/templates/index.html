@@ -113,10 +113,6 @@
                 
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-bell me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Alerts</span>
-                        </a>
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" class="dropdown-item">
                                 <i class="fa fa-lightbulb text-warning me-2"></i>
@@ -168,6 +164,9 @@
                     </div>
                     <div style="width: 50%; float: left;">
                         <canvas id="temperatureChart"></canvas>
+                    </div>
+                    <div style="width: 50%; float: left;">
+                        <canvas id="gasChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -240,6 +239,7 @@
         // Initialize data arrays
         var humidityData = Array.from({ length: 11 }, () => null);
         var temperatureData = Array.from({ length: 11 }, () => null);
+        var gasData = Array.from({ length: 11 }, () => null);
         var labels = Array.from({ length: 11 }, (_, index) => (10 - index).toString());
 
         // Create Humidity Chart
@@ -259,6 +259,26 @@
                 scales: {
                     x: { type: 'category', position: 'bottom' },
                     y: { min: 0, max: 200 }
+                }
+            }
+        });
+
+        var gasChartCtx = document.getElementById('gasChart').getContext('2d');
+        var gasChart = new Chart(gasChartCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Gas',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    data: gasData,
+                }]
+            },
+            options: {
+                scales: {
+                    x: { type: 'category', position: 'bottom' },
+                    y: { min: 10, max: 1000 }
                 }
             }
         });
@@ -295,17 +315,22 @@
                     if (response.status === 'success') {
                         var humidityValue = response.humidity
                         var temperatureValue = response.temp
+                        var gas_concentration = response.gas_concentration
 
                         humidityData.shift();
                         temperatureData.shift();
+                        gasData.shift();
                         humidityData.push(humidityValue);
                         temperatureData.push(temperatureValue);
+                        gasData.push(gas_concentration);
 
                         // Update chart data and redraw
                         humidityChart.data.datasets[0].data = humidityData;
                         temperatureChart.data.datasets[0].data = temperatureData;
+                        gasChart.data.datasets[0].data = gasData;
                         humidityChart.update();
                         temperatureChart.update();
+                        gasChart.update();
 
                         // Update comfort status and gas
                         updateComfortLabel(response.predicted_comfort_level);
@@ -324,8 +349,9 @@
 
         }
 
+        fetchDataAndUpdateCharts();
         // Set interval based on your requirement (e.g., every second)
-        setInterval(fetchDataAndUpdateCharts, 5000);
+        setInterval(fetchDataAndUpdateCharts, 2000);
     });
 </script>
 
