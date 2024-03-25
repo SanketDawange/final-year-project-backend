@@ -8,6 +8,11 @@ import random
 from .models import SensorData
 from django.utils.dateparse import parse_datetime
 import requests
+from .send_sms import send
+from django.utils import timezone
+from datetime import timedelta
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Alert
 
 # views.py
 
@@ -15,6 +20,26 @@ from django.shortcuts import render
 
 def index(request):
     return render(request, 'index.html')
+
+
+def create_alert(temp):
+    Alert.objects.create(alert_message=f"Your vehicle temperature crossed 40 degrees Celsius. Current temperature: {temp}")
+
+
+def send_alert(temp):
+    # Fetch the most recent Alert object
+    msg = "Your vehicle temperature crossed 40 degrees Celsius. Current temperature "
+
+    try:
+        recent_alert = Alert.objects.latest('created_at')
+        # Check if the most recent alert is older than 5 minutes
+        if timezone.now() - recent_alert.created_at > timedelta(minutes=5):
+            send(msg+ str(temp))
+            create_alert(temp)
+    except ObjectDoesNotExist:
+        # If no Alert objects exist, send the alert
+        send(msg+ str(temp))
+        create_alert(temp)
 
 @csrf_exempt 
 def getData(request):
@@ -26,7 +51,16 @@ def getData(request):
 
         gas_concentration = latest_record.field1
         temp = latest_record.field2
+        # temp = 41
         humidity = latest_record.field3
+
+        if temp >= 40:
+
+            print("################## Sending alert")
+            send_alert(temp)
+
+        else:
+            print("################## Not sending alert")
 
         dht11_model_path = 'backend_app\ml\dht11\comfort_level_model.joblib'
         mqt135_model_path = 'backend_app\ml\mqt135\gas_concentration.joblib'
