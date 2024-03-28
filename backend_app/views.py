@@ -26,9 +26,9 @@ def create_alert(temp):
     Alert.objects.create(alert_message=f"Your vehicle temperature crossed 40 degrees Celsius. Current temperature: {temp}")
 
 
-def send_alert(temp):
+def send_alert(temp, temp_limit):
     # Fetch the most recent Alert object
-    msg = "Your vehicle temperature crossed 40 degrees Celsius. Current temperature "
+    msg = "Your vehicle temperature crossed "+ str(temp_limit)+" degrees Celsius. Current temperature "
 
     try:
         recent_alert = Alert.objects.latest('created_at')
@@ -53,11 +53,11 @@ def getData(request):
         temp = latest_record.field2
         # temp = 41
         humidity = latest_record.field3
-
-        if temp >= 40:
+        temp_limit = 25
+        if temp >= temp_limit:
 
             print("################## Sending alert")
-            send_alert(temp)
+            send_alert(temp,temp_limit)
 
         else:
             print("################## Not sending alert")
